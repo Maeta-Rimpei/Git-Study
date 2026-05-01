@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="icon.png" />
+    <title>Git・GitHub 基礎講義</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              warmbg: "#FAF9F6",
+              gitblue: "#4A90E2",
+              githuborange: "#E67E22",
+              textmain: "#333333",
+              textsub: "#666666",
+            },
+            fontFamily: {
+              sans: [
+                '"Helvetica Neue"',
+                "Arial",
+                '"Hiragino Kaku Gothic ProN"',
+                '"Hiragino Sans"',
+                "Meiryo",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 350px;
+        max-height: 400px;
+      }
+      @media (min-width: 768px) {
+        .chart-container {
+          height: 400px;
+        }
+      }
+      body {
+        background-color: #faf9f6;
+        color: #333333;
+      }
+      .step-active {
+        border-color: #4a90e2;
+        background-color: #eff6ff;
+      }
+      .tab-active {
+        border-bottom: 4px solid #4a90e2;
+        color: #4a90e2;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body class="font-sans antialiased leading-relaxed">
+    <!-- Chosen Palette: Warm Neutral (Background: #FAF9F6, Surface: #FFFFFF, Primary: #4A90E2, Accent: #E67E22, Text: #333333) -->
+    <!-- Application Structure Plan: The SPA is structured as a continuous learning journey for non-engineers. 1. Hero Section: Grabs attention with the core value proposition. 2. Conceptual Foundation: Side-by-side comparison of Git vs GitHub using everyday metaphors. 3. Pain Points & Impact (Interactive Tabs & Chart): Connects theory to reality by showing EXACTLY what problems are solved, backed by a chart illustrating productivity gains. 4. Interactive Workflow: A step-by-step clickable visualizer breaking down the daily 5-step cycle. This structure shifts the user from problem awareness to conceptual understanding, and finally to practical workflow application. -->
+    <!-- Visualization & Content Choices: 1. Bar Chart (Chart.js) -> Goal: Inform/Compare -> Shows estimated time wasted before/after version control -> Justification: Abstract concepts like "version control" need concrete productivity metrics for non-engineers to buy in. 2. Interactive Toggle Tabs -> Goal: Organize -> Switches between Personal/Git and Team/GitHub problems -> Justification: Prevents information overload and categorizes benefits clearly. 3. Interactive Stepper -> Goal: Process Flow -> Clickable steps revealing workflow details -> Justification: The 5-step daily cycle is the most practical part; interacting with it builds memory. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+          <div class="text-xl font-bold text-gitblue">Git / GitHub Guide</div>
+          <div
+            class="hidden sm:flex space-x-8 text-sm font-medium text-textsub"
+          >
+            <a href="#concept" class="hover:text-gitblue transition-colors"
+              >基本概念</a
+            >
+            <a href="#solutions" class="hover:text-gitblue transition-colors"
+              >解決できること</a
+            >
+            <a href="#workflow" class="hover:text-gitblue transition-colors"
+              >1日の流れ</a
+            >
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <header class="py-20 text-center px-4">
+      <div class="max-w-4xl mx-auto">
+        <h1
+          class="text-4xl sm:text-5xl font-extrabold text-textmain tracking-tight mb-6"
+        >
+          「あのファイルどこ？」をなくし、<br
+            class="hidden sm:block"
+          />チーム作業を<span class="text-gitblue">劇的に効率化</span>する
+        </h1>
+        <p class="text-lg sm:text-xl text-textsub mb-10 max-w-2xl mx-auto">
+          ファイル名が「20260502_本当にこれが最新(最新版_本物)」になる問題から解放されませんか？<br />
+          エンジニアが使っている最強の履歴管理ツールを、日常業務に取り入れましょう。
+        </p>
+        <a
+          href="#concept"
+          class="inline-block bg-gitblue text-white font-semibold px-8 py-4 rounded-full shadow-lg hover:bg-blue-600 transition-all transform hover:-translate-y-1"
+        >
+          基礎から学ぶ ⬇️
+        </a>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 space-y-32">
+      <section id="concept" class="scroll-mt-24">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold mb-4">
+            1. そもそも、Git / GitHub とは？
+          </h2>
+          <p class="text-lg text-textsub max-w-3xl mx-auto">
+            このセクションでは、よく混同されがちな「Git」と「GitHub」の役割の違いを、日常的なモノに例えて解説します。まずはこの2つの関係性をしっかりイメージしましょう。
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <div
+            class="bg-white rounded-2xl shadow-md p-8 border-t-4 border-gitblue hover:shadow-lg transition-shadow"
+          >
+            <div class="text-6xl mb-4 mx-auto">
+              <svg width="128" height="128" class="mx-auto">
+                <path
+                  fill="#F34F29"
+                  d="M124.742 58.378L69.625 3.264c-3.172-3.174-8.32-3.174-11.497 0L46.685 14.71l14.518 14.518c3.375-1.139 7.243-.375 9.932 2.314a9.66 9.66 0 012.293 9.993L87.42 55.529c3.385-1.167 7.292-.413 9.994 2.295 3.78 3.777 3.78 9.9 0 13.679a9.673 9.673 0 01-13.683 0 9.677 9.677 0 01-2.105-10.521L68.578 47.933l-.002 34.341a9.708 9.708 0 012.559 1.828c3.779 3.777 3.779 9.898 0 13.683-3.779 3.777-9.904 3.777-13.679 0-3.778-3.784-4.088-9.905-.311-13.683.934-.933 1.855-1.638 2.855-2.11V47.333c-1-.472-1.92-1.172-2.856-2.111-2.861-2.86-3.396-7.06-1.928-10.576L40.983 20.333 3.229 58.123c-3.175 3.177-3.155 8.325.02 11.5l55.126 55.114c3.173 3.174 8.325 3.174 11.503 0l54.86-54.858c3.175-3.176 3.178-8.327.004-11.501z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-center mb-2 text-gitblue">
+              Git (ギット)
+            </h3>
+            <p class="text-center font-semibold text-textsub mb-6">
+              ファイルの「履歴」を管理する道具
+            </p>
+            <ul class="space-y-4 text-textmain">
+              <li class="flex items-start">
+                <span class="mr-2">✔️</span>
+                <span
+                  >全自動・履歴管理ノート。「いつ」「誰が」「どこを」変えたか全て記録します。</span
+                >
+              </li>
+              <li class="flex items-start">
+                <span class="mr-2">✔️</span>
+                <span>自分のパソコンの中（ローカル）で動くツールです。</span>
+              </li>
+              <li class="flex items-start">
+                <span class="mr-2">✔️</span>
+                <span>いつでも過去の状態に確実に戻せます。</span>
+              </li>
+            </ul>
+            <div
+              class="mt-8 bg-warmbg p-4 rounded-lg text-sm border border-gray-200"
+            >
+              <strong class="text-gitblue">💡 日常の例え：</strong><br />
+              あなた個人の「家計簿（記録用ノート）」
+            </div>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl shadow-md p-8 border-t-4 border-githuborange hover:shadow-lg transition-shadow"
+          >
+            <div class="text-6xl mb-4 text-center">
+              <svg width="128" height="128" class="mx-auto">
+                <g fill="#181616">
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M64 5.103c-33.347 0-60.388 27.035-60.388 60.388 0 26.682 17.303 49.317 41.297 57.303 3.017.56 4.125-1.31 4.125-2.905 0-1.44-.056-6.197-.082-11.243-16.8 3.653-20.345-7.125-20.345-7.125-2.747-6.98-6.705-8.836-6.705-8.836-5.48-3.748.413-3.67.413-3.67 6.063.425 9.257 6.223 9.257 6.223 5.386 9.23 14.127 6.562 17.573 5.02.542-3.903 2.107-6.568 3.834-8.076-13.413-1.525-27.514-6.704-27.514-29.843 0-6.593 2.36-11.98 6.223-16.21-.628-1.52-2.695-7.662.584-15.98 0 0 5.07-1.623 16.61 6.19C53.7 35 58.867 34.327 64 34.304c5.13.023 10.3.694 15.127 2.033 11.526-7.813 16.59-6.19 16.59-6.19 3.287 8.317 1.22 14.46.593 15.98 3.872 4.23 6.215 9.617 6.215 16.21 0 23.194-14.127 28.3-27.574 29.796 2.167 1.874 4.097 5.55 4.097 11.183 0 8.08-.07 14.583-.07 16.572 0 1.607 1.088 3.49 4.148 2.897 23.98-7.994 41.263-30.622 41.263-57.294C124.388 32.14 97.35 5.104 64 5.104z"
+                  ></path>
+                  <path
+                    d="M26.484 91.806c-.133.3-.605.39-1.035.185-.44-.196-.685-.605-.543-.906.13-.31.603-.395 1.04-.188.44.197.69.61.537.91zm2.446 2.729c-.287.267-.85.143-1.232-.28-.396-.42-.47-.983-.177-1.254.298-.266.844-.14 1.24.28.394.426.472.984.17 1.255zM31.312 98.012c-.37.258-.976.017-1.35-.52-.37-.538-.37-1.183.01-1.44.373-.258.97-.025 1.35.507.368.545.368 1.19-.01 1.452zm3.261 3.361c-.33.365-1.036.267-1.552-.23-.527-.487-.674-1.18-.343-1.544.336-.366 1.045-.264 1.564.23.527.486.686 1.18.333 1.543zm4.5 1.951c-.147.473-.825.688-1.51.486-.683-.207-1.13-.76-.99-1.238.14-.477.823-.7 1.512-.485.683.206 1.13.756.988 1.237zm4.943.361c.017.498-.563.91-1.28.92-.723.017-1.308-.387-1.315-.877 0-.503.568-.91 1.29-.924.717-.013 1.306.387 1.306.88zm4.598-.782c.086.485-.413.984-1.126 1.117-.7.13-1.35-.172-1.44-.653-.086-.498.422-.997 1.122-1.126.714-.123 1.354.17 1.444.663zm0 0"
+                  ></path>
+                </g>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-center mb-2 text-githuborange">
+              <a href="https://github.com/" target="_blank" class="underline">
+                GitHub (ギットハブ)
+              </a>
+            </h3>
+            <p class="text-center font-semibold text-textsub mb-6">
+              ファイルを「共有・相談」する場所
+            </p>
+            <ul class="space-y-4 text-textmain">
+              <li class="flex items-start">
+                <span class="mr-2">✔️</span>
+                <span
+                  >高機能なクラウド作業スペース。Gitの記録をインターネット上で管理します。</span
+                >
+              </li>
+              <li class="flex items-start">
+                <span class="mr-2">✔️</span>
+                <span
+                  >みんなのファイルを一箇所にまとめ、共同作業を可能にします。</span
+                >
+              </li>
+              <li class="flex items-start">
+                <span class="mr-2">✔️</span>
+                <span>変更箇所のチェックや相談が画面上で簡単に行えます。</span>
+              </li>
+            </ul>
+            <div
+              class="mt-8 bg-warmbg p-4 rounded-lg text-sm border border-gray-200"
+            >
+              <strong class="text-githuborange">💡 日常の例え：</strong><br />
+              家族全員で見られる「クラウド家計簿アプリ」
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="solutions" class="scroll-mt-24">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold mb-4">
+            2. どんな「困った！」を解決できるのか？
+          </h2>
+          <p class="text-lg text-textsub max-w-3xl mx-auto">
+            日常業務でよく起こる「ファイル管理のストレス」。GitとGitHubを導入することで、個人とチーム両方の課題がどのように劇的に改善されるのかを確認しましょう。
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+          <div class="flex border-b">
+            <button
+              id="tab-git"
+              class="flex-1 py-4 text-center text-lg font-semibold tab-active focus:outline-none bg-gray-50 hover:bg-white transition-colors"
+            >
+              👤 Gitで解決（個人の悩み）
+            </button>
+            <button
+              id="tab-github"
+              class="flex-1 py-4 text-center text-lg font-semibold text-gray-500 border-b-4 border-transparent hover:text-githuborange focus:outline-none bg-gray-50 hover:bg-white transition-colors"
+            >
+              👥 GitHubで解決（チームの悩み）
+            </button>
+          </div>
+
+          <div class="p-8">
+            <div
+              id="content-git"
+              class="grid sm:grid-cols-3 gap-6 animate-fade-in"
+            ></div>
+            <div
+              id="content-github"
+              class="grid sm:grid-cols-3 gap-6 hidden animate-fade-in"
+            ></div>
+          </div>
+        </div>
+
+        <div class="mt-16 text-center">
+          <h3 class="text-2xl font-bold mb-6">
+            導入による「無駄な時間」の削減効果（イメージ）
+          </h3>
+          <p class="text-textsub mb-8">
+            ファイル探しや先祖返りの復旧に費やしている時間は、年間で見ると膨大です。
+          </p>
+          <div
+            class="chart-container bg-white p-4 rounded-xl shadow-sm border border-gray-100"
+          >
+            <canvas id="productivityChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <div
+        class="mt-12 mb-10 bg-blue-50 p-6 sm:p-8 rounded-2xl border border-blue-100 max-w-5xl mx-auto"
+      >
+        <div class="text-center mb-6">
+          <h4 class="font-bold text-3xl mb-4">3. 先に覚える5つの操作</h4>
+          <p class="text-textsub text-sm sm:text-base max-w-3xl mx-auto">
+            「何をする操作か」「いつ使うか」「日常のたとえ」を1枚ずつ確認してから、下のワークフローを見ると理解しやすくなります。
+          </p>
+        </div>
+
+        <div
+          class="bg-white border border-gray-200 rounded-xl p-4 text-sm text-textsub mb-6"
+        >
+          <p class="font-semibold text-textmain mb-2">
+            📌 操作の全体像（複数人での作業にて）
+          </p>
+          <p class="leading-relaxed">
+            作業の流れは
+            初回のみ<span class="font-bold text-githuborange">clone</span>
+            でプロジェクトを手元にコピーします。以降は
+            <span class="font-bold text-githuborange">pull</span> で最新を受け取り、
+            <span class="font-bold text-gitblue">add</span>
+            で記録したい変更を選び、
+            <span class="font-bold text-gitblue">commit</span>
+            で理由付きで確定し、
+            <span class="font-bold text-githuborange">push</span>
+            で共有します。
+          </p>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="flex flex-col gap-4">
+            <div
+              class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+              <p class="font-bold text-gitblue mb-2">🧺 add（ステージング）</p>
+              <p class="text-textmain mb-2">記録したい変更だけを選ぶ</p>
+              <p class="text-textsub mb-2">修正が一区切りついたとき</p>
+              <p class="text-textsub">
+                提出する書類だけを提出トレイに入れるイメージ
+              </p>
+            </div>
+
+            <div
+              class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
+            >
+              <p class="font-bold text-gitblue mb-2">📝 commit（コミット）</p>
+              <p class="text-textmain mb-2">変更をメッセージ付きで履歴に確定</p>
+              <p class="text-textsub mb-2">意味のある単位で完了したとき</p>
+              <p class="text-textsub">
+                作業日誌に「何を直したか」を書いて保存するイメージ
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-4">
+            <div
+              class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
+            >
+              <p class="font-bold text-githuborange mb-2">
+                📥 clone（クローン）
+              </p>
+              <p class="text-textmain mb-2">新しく参加したとき（初回だけ）</p>
+              <p class="text-textmain mb-2">
+                プロジェクト一式を最初にPCへコピー
+              </p>
+              <p class="text-textsub">
+                他人の作った資料を丸ごと自分の机に持ってくるイメージ
+              </p>
+            </div>
+
+            <div
+              class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
+            >
+              <p class="font-bold text-githuborange mb-2">📨 pull（プル）</p>
+              <p class="text-textmain mb-2">作業開始前、または共有前</p>
+              <p class="text-textmain mb-2">
+                GitHub上にアップした他の人の最新変更分を自分のPCに取り込む(合体して一つにする)
+              </p>
+              <p class="text-textsub">
+                他人の作った資料と自分の作った資料を合体して一つにするイメージ
+              </p>
+            </div>
+
+            <div
+              class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
+            >
+              <p class="font-bold text-githuborange mb-2">
+                🚀 push（プッシュ）
+              </p>
+              <p class="text-textmain mb-2">自分の確定履歴を共有先へ送る</p>
+              <p class="text-textsub mb-2">レビュー依頼前、作業終了前</p>
+              <p class="text-textsub">
+                日誌の最新ページをチームに配布するイメージ
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section id="workflow" class="scroll-mt-24">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold mb-4">
+            4. "1日の作業の流れ" から見るGit・GitHubの使い方
+          </h2>
+          <p class="text-lg text-textsub max-w-3xl mx-auto">
+            専門用語も、イメージを持てば難しくありません。チームで作業する際の「朝から夕方までの基本的な5つのステップ」を順番にクリックして確認してください。
+          </p>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8 items-start">
+          <div
+            class="w-full lg:w-1/3 flex flex-col gap-3"
+            id="stepper-buttons"
+          ></div>
+
+          <div
+            class="w-full lg:w-2/3 bg-white rounded-2xl shadow-lg p-8 border border-gray-100 relative overflow-hidden min-h-[350px] flex flex-col justify-center"
+          >
+            <div
+              class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-full -z-10 opacity-50"
+            ></div>
+
+            <div id="step-display" class="text-center">
+              <div id="step-icon" class="text-7xl mb-6">🔄</div>
+              <h3 id="step-title" class="text-3xl font-bold text-gitblue mb-2">
+                左のステップを選択
+              </h3>
+              <p
+                id="step-subtitle"
+                class="text-xl font-semibold text-textmain mb-6"
+              >
+                詳細が表示されます
+              </p>
+              <p
+                id="step-desc"
+                class="text-lg text-textsub leading-relaxed max-w-lg mx-auto bg-warmbg p-6 rounded-xl border border-gray-200"
+              >
+                「1日の作業の流れ（基本サイクル）」を体験しましょう。<br />
+                ボタンをクリックすると、それぞれの操作の「意味」と「日常の例え」が確認できます。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-white border-t py-8 text-center text-textsub text-sm">
+      <p>Git・GitHub 基礎講義資料</p>
+    </footer>
+
+    <script>
+      const painPoints = {
+        git: [
+          {
+            icon: "🗂️",
+            title: "ファイル名の「最新」への疑心暗鬼とサヨナラ",
+            before:
+              "企画書_最新_本当の最終.xlsx ← 最新と言いながら、割と古かったりする",
+            after:
+              "ファイル名は「企画書.xlsx」のまま、中身の世代だけをGitが裏で自動記録。",
+          },
+          {
+            icon: "⏪",
+            title: "修正前の内容にやっぱり戻したい...",
+            before: "消した表を取り戻せない...。結構時間かけたのに...",
+            after:
+              "「昨日の昼時点」など、特定の時点の状態に数コマンドで確実に復旧可能。",
+          },
+          {
+            icon: "🤔",
+            title: "なぜ変えたか忘れた。変更が怖くて何もできない。",
+            before: "半年前の自分、何でここ消した？",
+            after:
+              "変更のたびに「〇〇の修正」とメモを残すため、後から意図が明確にわかる。",
+          },
+        ],
+        github: [
+          {
+            icon: "🛡️",
+            title: "先祖返りの防止",
+            before: "Aさんの修正をBさんが上書きして消滅",
+            after:
+              "同時編集しても「ここ重なってますよ」と警告してミスを未然に防ぐ。",
+          },
+          {
+            icon: "✉️",
+            title: "メール送付地獄の卒業",
+            before: "「すみません、最新版どれですか？」",
+            after:
+              "全員が同じクラウドを見るため、常にそこにあるのが唯一の「最新版」。",
+          },
+          {
+            icon: "🔍",
+            title: "ダブルチェックの効率化",
+            before: "どこを変えたのか目視で必死に探す",
+            after:
+              "変更箇所が色付きで表示されるため、確認者が修正点を探す手間がゼロに。",
+          },
+        ],
+      };
+
+      function renderPainPoints(type) {
+        const container = document.getElementById(`content-${type}`);
+        container.innerHTML = "";
+        painPoints[type].forEach((item) => {
+          const html = `
+                    <div class="bg-warmbg p-6 rounded-xl border border-gray-200 flex flex-col h-full">
+                        <div class="text-4xl mb-4">${item.icon}</div>
+                        <h4 class="font-bold text-lg mb-4 text-textmain border-b pb-2">${item.title}</h4>
+                        <div class="mb-4 text-sm text-red-600 bg-red-50 p-3 rounded-lg flex-grow">
+                            <p class="text-sm font-semibold text-red-600 bg-red-50 p-3 rounded-lg flex-grow">❌ 導入前</p>
+                            ${item.before}
+                        </div>
+                        <div class="text-sm text-green-700 bg-green-50 p-3 rounded-lg font-medium">
+                            <p class="text-sm font-semibold text-green-700 bg-green-50 p-3 rounded-lg flex-grow">✅ 導入後</p>
+                            ${item.after}
+                        </div>
+                    </div>
+                `;
+          container.innerHTML += html;
+        });
+      }
+
+      const tabGit = document.getElementById("tab-git");
+      const tabGithub = document.getElementById("tab-github");
+      const contentGit = document.getElementById("content-git");
+      const contentGithub = document.getElementById("content-github");
+
+      tabGit.addEventListener("click", () => {
+        tabGit.classList.add("tab-active");
+        tabGit.classList.remove("text-gray-500", "border-transparent");
+        tabGithub.classList.remove("tab-active", "text-githuborange");
+        tabGithub.classList.add("text-gray-500", "border-transparent");
+        contentGit.classList.remove("hidden");
+        contentGithub.classList.add("hidden");
+      });
+
+      tabGithub.addEventListener("click", () => {
+        tabGithub.classList.add("tab-active", "text-githuborange");
+        tabGithub.classList.remove("text-gray-500", "border-transparent");
+        tabGit.classList.remove("tab-active");
+        tabGit.classList.add("text-gray-500", "border-transparent");
+        contentGithub.classList.remove("hidden");
+        contentGit.classList.add("hidden");
+      });
+
+      renderPainPoints("git");
+      renderPainPoints("github");
+
+      const ctx = document.getElementById("productivityChart").getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: [
+            "ファイル探し",
+            "変更箇所の確認",
+            "上書きミスの復旧",
+            "手動バックアップ",
+          ],
+          datasets: [
+            {
+              label: "導入前（時間/月）",
+              data: [8, 10, 5, 4],
+              backgroundColor: "#E5E7EB",
+              borderRadius: 4,
+            },
+            {
+              label: "Git/GitHub導入後（時間/月）",
+              data: [1, 2, 0.5, 0],
+              backgroundColor: "#4A90E2",
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "top" },
+            tooltip: {
+              mode: "index",
+              intersect: false,
+              callbacks: {
+                label: (context) =>
+                  `${context.dataset.label}: ${context.raw} 時間`,
+              },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "消費時間（月間）" },
+            },
+          },
+        },
+      });
+
+      const workflowSteps = [
+        {
+          id: "pull",
+          title: "1. Pull (プル)",
+          subtitle: "朝の準備・最新取得",
+          desc: "朝、作業を始める前に、チームのみんなが昨日アップロードした最新の作業状況を、自分のPCに取り込み（ダウンロード）ます。",
+          icon: "⬇️",
+          color: "border-blue-300",
+        },
+        {
+          id: "edit",
+          title: "2. 作業 (編集)",
+          subtitle: "自由にファイル編集",
+          desc: "ExcelやWord、プログラムのコードなど、必要なファイルを普段通りに自分のPCで編集します。",
+          icon: "📝",
+          color: "border-gray-300",
+        },
+        {
+          id: "add",
+          title: "3. Add (ステージング)",
+          subtitle: "提出トレイに載せる",
+          desc: "たくさん編集したファイルの中から、「今回記録に残したいファイル」だけを選んで、Gitの【提出トレイ】に載せます。",
+          icon: "📥",
+          color: "border-yellow-400",
+        },
+        {
+          id: "commit",
+          title: "4. Commit (コミット)",
+          subtitle: "履歴ノートに記録確定",
+          desc: "提出トレイに載せたファイルに「〇〇の修正」というメモを付けて、Gitの【履歴ノート】にガチャンとハンコを押して記録を確定させます。",
+          icon: "✅",
+          color: "border-green-400",
+        },
+        {
+          id: "push",
+          title: "5. Push (プッシュ)",
+          subtitle: "クラウドへ共有",
+          desc: "一日の終わりに、自分のPCで確定させた記録（コミット）を、GitHubの共有スペースにアップロードしてチーム全員に共有します。",
+          icon: "☁️",
+          color: "border-githuborange",
+        },
+      ];
+
+      const stepperContainer = document.getElementById("stepper-buttons");
+      const displayIcon = document.getElementById("step-icon");
+      const displayTitle = document.getElementById("step-title");
+      const displaySubtitle = document.getElementById("step-subtitle");
+      const displayDesc = document.getElementById("step-desc");
+
+      workflowSteps.forEach((step, index) => {
+        const btn = document.createElement("button");
+        btn.className = `w-full text-left p-4 rounded-xl border-2 border-transparent bg-white shadow-sm hover:shadow-md hover:border-gray-300 transition-all focus:outline-none flex items-center gap-4`;
+        btn.innerHTML = `
+                <div class="text-2xl">${step.icon}</div>
+                <div>
+                    <div class="font-bold text-textmain">${step.title}</div>
+                    <div class="text-xs text-textsub">${step.subtitle}</div>
+                </div>
+            `;
+
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("#stepper-buttons button").forEach((b) => {
+            b.classList.remove("step-active");
+            b.classList.add("border-transparent");
+          });
+          btn.classList.add("step-active");
+          btn.classList.remove("border-transparent");
+
+          displayIcon.textContent = step.icon;
+          displayTitle.textContent = step.title;
+          displaySubtitle.textContent = step.subtitle;
+          displayDesc.innerHTML = `<span class="font-bold border-b-2 ${step.color} pb-1 mb-2 inline-block">操作のイメージ：</span><br>${step.desc}`;
+
+          const displayArea = document.getElementById("step-display");
+          displayArea.classList.remove("opacity-100");
+          displayArea.classList.add("opacity-50");
+          setTimeout(() => {
+            displayArea.classList.remove("opacity-50");
+            displayArea.classList.add(
+              "opacity-100",
+              "transition-opacity",
+              "duration-300",
+            );
+          }, 50);
+        });
+        stepperContainer.appendChild(btn);
+      });
+    </script>
+  </body>
+</html>
